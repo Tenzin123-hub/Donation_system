@@ -5,6 +5,15 @@ include '../includes/header.php';
 
 <h2>Add Donor</h2>
 
+<?php
+if (isset($_GET['error'])) {
+    echo '<p style="color: red;">Error: ' . htmlspecialchars($_GET['error']) . '</p>';
+}
+if (isset($_GET['success'])) {
+    echo '<p style="color: green;">' . htmlspecialchars($_GET['success']) . '</p>';
+}
+?>
+
 <form method="post" action="save_donor.php">
     Name:<br>
     <input type="text" name="name" required><br><br>
@@ -22,25 +31,31 @@ include '../includes/header.php';
 
 <h2>Donor List</h2>
 
-<table>
+<table border="1" cellpadding="10">
 <tr>
 <th>Name</th><th>Email</th><th>Location</th><th>Action</th>
 </tr>
 
 <?php
 $result = $conn->query("SELECT * FROM donors");
-while ($row = $result->fetch_assoc()) {
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
 ?>
 <tr>
-<td><?= $row['name'] ?></td>
-<td><?= $row['email'] ?></td>
-<td><?= $row['location'] ?></td>
+<td><?= htmlspecialchars($row['name']) ?></td>
+<td><?= htmlspecialchars($row['email']) ?></td>
+<td><?= htmlspecialchars($row['location']) ?></td>
 <td>
 <a href="edit_donor.php?id=<?= $row['id'] ?>">Edit</a> |
 <a href="delete_donor.php?id=<?= $row['id'] ?>">Delete</a>
 </td>
 </tr>
-<?php } ?>
+<?php 
+    }
+} else {
+    echo '<tr><td colspan="4">No donors found</td></tr>';
+}
+?>
 </table>
 
 <?php include '../includes/footer.php'; ?>
